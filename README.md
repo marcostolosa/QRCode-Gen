@@ -9,7 +9,7 @@
 
 A modern, feature-rich QR code generator web application built with React, TypeScript, and Vite. Create customizable QR codes with advanced styling options, logo integration, and multiple export formats.
 
-![](/qrcode-generator/components/demo.png)
+![](components/demo.png)
 
 ## Features
 
