@@ -38,7 +38,7 @@ export interface AppState {
 
 const App: React.FC = () => {
     const [state, setState] = useState<AppState>({
-        data: 'https://gemini.google.com/',
+        data: 'https://mindsecurity.org/',
         // Colors
         foregroundColor: '#0b1226',
         backgroundColor: '#ffffff',
