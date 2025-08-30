@@ -31,6 +31,7 @@ const en = {
             dotStyle: 'Dot Style',
             cornerSquare: 'Corner Square Style',
             cornerDot: 'Corner Dot Style',
+            cornerDotColor: 'Corner Dot Color',
         },
         logo: {
             title: 'Logo',
@@ -84,6 +85,7 @@ const pt: Translation = {
             dotStyle: 'Estilo dos Pontos',
             cornerSquare: 'Estilo do Canto (Quadrado)',
             cornerDot: 'Estilo do Canto (Ponto)',
+            cornerDotColor: 'Cor do Ponto do Canto',
         },
         logo: {
             title: 'Logo',

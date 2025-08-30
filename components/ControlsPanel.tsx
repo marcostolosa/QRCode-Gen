@@ -3,20 +3,58 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import type { AppState } from '../App';
 import { useLanguage } from '../context/LanguageContext';
 
-const Card: React.FC<{ title: string; children: React.ReactNode; className?: string }> = ({ title, children, className = '' }) => (
+const CollapsibleCard: React.FC<{ 
+  title: string; 
+  children: React.ReactNode; 
+  className?: string; 
+  defaultExpanded?: boolean;
+  expandedState?: boolean;
+  onToggle?: () => void;
+}> = ({ title, children, className = '', defaultExpanded = true, expandedState, onToggle }) => {
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+  const isExpanded = expandedState !== undefined ? expandedState : internalExpanded;
+  
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle();
+    } else {
+      setInternalExpanded(!internalExpanded);
+    }
+  };
+
+  return (
     <div className={`bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200/80 dark:border-gray-700/50 shadow-sm ${className} transition-colors duration-300`}>
-        <div className="p-4 border-b border-gray-200/80 dark:border-gray-700/50">
-            <h3 className="text-md font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
-        </div>
+      <div className="p-4 border-b border-gray-200/80 dark:border-gray-700/50">
+        <button
+          onClick={handleToggle}
+          className="flex items-center justify-between w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+        >
+          <h3 className={`text-md font-semibold transition-colors duration-200 ${isExpanded ? 'text-blue-600 dark:text-blue-400' : 'text-gray-800 dark:text-gray-200'}`}>{title}</h3>
+          <div className="block sm:hidden">
+            <svg
+              className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''} ${isExpanded ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+      </div>
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 sm:max-h-screen sm:opacity-100'}`}>
         <div className="p-4 space-y-4">
-            {children}
+          {children}
         </div>
+      </div>
     </div>
-);
+  );
+};
+
 
 const Label: React.FC<{ htmlFor: string; children: React.ReactNode; info?: string }> = ({ htmlFor, children, info }) => (
     <label htmlFor={htmlFor} className="flex justify-between items-center text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -47,6 +85,27 @@ const ControlsPanel: React.FC<{ state: AppState; setState: React.Dispatch<React.
     const { translations } = useLanguage();
     const t = translations.controls;
     
+    // Mobile accordion state management - only one section expanded at a time
+    const [activeSection, setActiveSection] = useState<keyof typeof sections | null>('content');
+    
+    const sections = {
+        content: true,
+        colors: true,
+        design: true,
+        eyes: true,
+        logo: true,
+        advanced: true
+    };
+    
+    const toggleSection = (section: keyof typeof sections) => {
+        // If clicking the same section, close it; otherwise, open the new one
+        setActiveSection(prev => prev === section ? null : section);
+    };
+    
+    const isSectionExpanded = (section: keyof typeof sections) => {
+        return activeSection === section;
+    };
+    
     const handleValueChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const isCheckbox = type === 'checkbox';
@@ -56,7 +115,8 @@ const ControlsPanel: React.FC<{ state: AppState; setState: React.Dispatch<React.
     
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setState(prevState => ({ ...prevState, [name]: Number(value) }));
+        const numValue = parseFloat(value);
+        setState(prevState => ({ ...prevState, [name]: numValue }));
     };
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,85 +144,109 @@ const ControlsPanel: React.FC<{ state: AppState; setState: React.Dispatch<React.
 
     return (
         <div className="space-y-6">
-            <Card title={t.content.title}>
+            <CollapsibleCard 
+                title={t.content.title}
+                expandedState={isSectionExpanded('content')}
+                onToggle={() => toggleSection('content')}
+            >
                 <div>
                     <Label htmlFor="data">{t.content.data}</Label>
                     <input type="text" id="data" name="data" value={state.data} onChange={handleValueChange} placeholder={t.content.placeholder} className={inputClasses} />
                 </div>
                 <div>
-                    <Label htmlFor="margin" info={`${state.margin}px`}>{t.content.margin}</Label>
-                    <input type="range" id="margin" name="margin" min="0" max="40" step="1" value={state.margin} onChange={handleSliderChange} className={rangeClasses} />
+                    <Label htmlFor="quietZone" info={`${state.quietZone}px`}>{t.content.margin}</Label>
+                    <input type="range" id="quietZone" name="quietZone" min="0" max="40" step="1" value={state.quietZone} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
                 </div>
-            </Card>
+            </CollapsibleCard>
 
-            <Card title={t.colors.title}>
+            <CollapsibleCard 
+                title={t.colors.title}
+                expandedState={isSectionExpanded('colors')}
+                onToggle={() => toggleSection('colors')}
+            >
                 <div className="grid grid-cols-2 gap-4">
-                    {state.useGradient ? (
-                        <>
-                        <div>
-                            <Label htmlFor="gradientColor1">{t.colors.gradientStart}</Label>
-                            <input type="color" id="gradientColor1" name="gradientColor1" value={state.gradientColor1} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
-                        </div>
-                        <div>
-                            <Label htmlFor="gradientColor2">{t.colors.gradientEnd}</Label>
-                            <input type="color" id="gradientColor2" name="gradientColor2" value={state.gradientColor2} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
-                        </div>
-                        </>
-                    ) : (
-                         <div>
-                            <Label htmlFor="foregroundColor">{t.colors.foreground}</Label>
-                            <input type="color" id="foregroundColor" name="foregroundColor" value={state.foregroundColor} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
-                        </div>
-                    )}
-                     <div>
+                    <div>
+                        <Label htmlFor="foregroundColor">{t.colors.foreground}</Label>
+                        <input type="color" id="foregroundColor" name="foregroundColor" value={state.foregroundColor} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
+                    </div>
+                    <div>
                         <Label htmlFor="backgroundColor">{t.colors.background}</Label>
                         <input type="color" id="backgroundColor" name="backgroundColor" value={state.backgroundColor} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
                     </div>
                 </div>
-                <div className="pt-2 space-y-4">
-                   <Checkbox id="useGradient" name="useGradient" checked={state.useGradient} onChange={handleValueChange}>{t.colors.useGradient}</Checkbox>
-                   {state.useGradient && (
-                     <div>
-                        <Label htmlFor="gradientType">{t.colors.gradientType}</Label>
-                        <select id="gradientType" name="gradientType" value={state.gradientType} onChange={handleValueChange} className={selectClasses}>
-                            <option value="linear">{t.colors.linear}</option>
-                            <option value="radial">{t.colors.radial}</option>
-                        </select>
-                    </div>
-                   )}
-                </div>
-            </Card>
+            </CollapsibleCard>
 
-            <Card title={t.design.title}>
+            <CollapsibleCard 
+                title={t.design.title}
+                expandedState={isSectionExpanded('design')}
+                onToggle={() => toggleSection('design')}
+            >
                 <div>
-                    <Label htmlFor="dotType">{t.design.dotStyle}</Label>
-                    <select id="dotType" name="dotType" value={state.dotType} onChange={handleValueChange} className={selectClasses}>
+                    <Label htmlFor="qrStyle">{t.design.qrStyle || 'QR Style'}</Label>
+                    <select id="qrStyle" name="qrStyle" value={state.qrStyle} onChange={handleValueChange} className={selectClasses}>
+                        <option value="squares">Squares</option>
                         <option value="dots">Dots</option>
-                        <option value="rounded">Rounded</option>
-                        <option value="classy">Classy</option>
-                        <option value="classy-rounded">Classy Rounded</option>
-                        <option value="square">Square</option>
-                        <option value="extra-rounded">Extra Rounded</option>
+                        <option value="fluid">Fluid</option>
                     </select>
                 </div>
-                <div>
-                    <Label htmlFor="cornerSquareType">{t.design.cornerSquare}</Label>
-                    <select id="cornerSquareType" name="cornerSquareType" value={state.cornerSquareType} onChange={handleValueChange} className={selectClasses}>
-                        <option value="dot">Dot</option>
-                        <option value="square">Square</option>
-                        <option value="extra-rounded">Extra Rounded</option>
-                    </select>
-                </div>
-                <div>
-                    <Label htmlFor="cornerDotType">{t.design.cornerDot}</Label>
-                    <select id="cornerDotType" name="cornerDotType" value={state.cornerDotType} onChange={handleValueChange} className={selectClasses}>
-                        <option value="dot">Dot</option>
-                        <option value="square">Square</option>
-                    </select>
-                </div>
-            </Card>
+            </CollapsibleCard>
 
-            <Card title={t.logo.title}>
+            <CollapsibleCard 
+                title={t.eyes?.title || 'Eye Customization'}
+                expandedState={isSectionExpanded('eyes')}
+                onToggle={() => toggleSection('eyes')}
+            >
+                <div className="space-y-4">
+                    <Checkbox id="useAdvancedEyeColors" name="useAdvancedEyeColors" checked={state.useAdvancedEyeColors} onChange={handleValueChange}>
+                        {t.eyes?.useAdvanced || 'Advanced Eye Colors'}
+                    </Checkbox>
+                    {state.useAdvancedEyeColors ? (
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="eyeColorOuter">{t.eyes?.outerColor || 'Outer Eye Color'}</Label>
+                                <input type="color" id="eyeColorOuter" name="eyeColorOuter" value={state.eyeColorOuter} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
+                            </div>
+                            <div>
+                                <Label htmlFor="eyeColorInner">{t.eyes?.innerColor || 'Inner Eye Color'}</Label>
+                                <input type="color" id="eyeColorInner" name="eyeColorInner" value={state.eyeColorInner} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <Label htmlFor="eyeColor">{t.eyes?.color || 'Eye Color'}</Label>
+                            <input type="color" id="eyeColor" name="eyeColor" value={state.eyeColor} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
+                        </div>
+                    )}
+                </div>
+                <div className="pt-4 space-y-4">
+                    <Checkbox id="useAdvancedEyeRadius" name="useAdvancedEyeRadius" checked={state.useAdvancedEyeRadius} onChange={handleValueChange}>
+                        {t.eyes?.useAdvancedRadius || 'Advanced Eye Radius'}
+                    </Checkbox>
+                    {state.useAdvancedEyeRadius ? (
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="eyeRadiusOuter" info={`${state.eyeRadiusOuter}px`}>{t.eyes?.outerRadius || 'Outer Eye Radius'}</Label>
+                                <input type="range" id="eyeRadiusOuter" name="eyeRadiusOuter" min="0" max="50" step="1" value={state.eyeRadiusOuter} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
+                            </div>
+                            <div>
+                                <Label htmlFor="eyeRadiusInner" info={`${state.eyeRadiusInner}px`}>{t.eyes?.innerRadius || 'Inner Eye Radius'}</Label>
+                                <input type="range" id="eyeRadiusInner" name="eyeRadiusInner" min="0" max="50" step="1" value={state.eyeRadiusInner} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <Label htmlFor="eyeRadius" info={`${state.eyeRadius}px`}>{t.eyes?.radius || 'Eye Radius'}</Label>
+                            <input type="range" id="eyeRadius" name="eyeRadius" min="0" max="50" step="1" value={state.eyeRadius} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
+                        </div>
+                    )}
+                </div>
+            </CollapsibleCard>
+
+            <CollapsibleCard 
+                title={t.logo.title}
+                expandedState={isSectionExpanded('logo')}
+                onToggle={() => toggleSection('logo')}
+            >
                 <div>
                   <Label htmlFor="logo">{t.logo.upload}</Label>
                   <input ref={logoInputRef} type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900" />
@@ -180,22 +264,50 @@ const ControlsPanel: React.FC<{ state: AppState; setState: React.Dispatch<React.
                         </p>
                     </div>
                     <div>
-                        <Label htmlFor="logoSize" info={`${Math.round(state.logoSize * 100)}%`}>{t.logo.size}</Label>
-                        <input type="range" id="logoSize" name="logoSize" min="0.1" max="1" step="0.05" value={state.logoSize} onChange={handleSliderChange} className={rangeClasses} />
+                        <Label htmlFor="logoSize" info={`${state.logoSize}px`}>{t.logo.size}</Label>
+                        <input type="range" id="logoSize" name="logoSize" min="20" max="200" step="5" value={state.logoSize} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
                     </div>
                     <div>
                         <Label htmlFor="logoOpacity" info={`${Math.round(state.logoOpacity * 100)}%`}>{t.logo.opacity}</Label>
-                        <input type="range" id="logoOpacity" name="logoOpacity" min="0.1" max="1" step="0.05" value={state.logoOpacity} onChange={handleSliderChange} className={rangeClasses} />
+                        <input type="range" id="logoOpacity" name="logoOpacity" min="0.1" max="1" step="0.05" value={state.logoOpacity} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
                     </div>
                     <div>
-                        <Label htmlFor="logoMargin" info={`${state.logoMargin}px`}>{t.logo.margin}</Label>
-                        <input type="range" id="logoMargin" name="logoMargin" min="0" max="20" step="1" value={state.logoMargin} onChange={handleSliderChange} className={rangeClasses} />
+                        <Label htmlFor="logoPadding" info={`${state.logoPadding}px`}>{t.logo?.padding || 'Logo Padding'}</Label>
+                        <input type="range" id="logoPadding" name="logoPadding" min="0" max="50" step="1" value={state.logoPadding} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
+                    </div>
+                    <div>
+                        <Label htmlFor="logoPaddingStyle">{t.logo?.paddingStyle || 'Padding Style'}</Label>
+                        <select id="logoPaddingStyle" name="logoPaddingStyle" value={state.logoPaddingStyle} onChange={handleValueChange} className={selectClasses}>
+                            <option value="square">Square</option>
+                            <option value="circle">Circle</option>
+                        </select>
+                    </div>
+                    {state.logoPaddingStyle === 'square' && (
+                        <div>
+                            <Label htmlFor="logoPaddingRadius" info={`${state.logoPaddingRadius}px`}>{t.logo?.paddingRadius || 'Border Radius'}</Label>
+                            <input type="range" id="logoPaddingRadius" name="logoPaddingRadius" min="0" max="25" step="1" value={state.logoPaddingRadius} onChange={handleSliderChange} onInput={handleSliderChange} className={rangeClasses} />
+                        </div>
+                    )}
+                    <div>
+                        <Checkbox id="logoBackground" name="logoBackground" checked={state.logoBackground} onChange={handleValueChange}>
+                            {t.logo?.background || 'Logo Background'}
+                        </Checkbox>
+                        {state.logoBackground && (
+                            <div className="mt-2">
+                                <Label htmlFor="logoBackgroundColor">{t.logo?.backgroundColor || 'Background Color'}</Label>
+                                <input type="color" id="logoBackgroundColor" name="logoBackgroundColor" value={state.logoBackgroundColor} onChange={handleValueChange} className="mt-1 block w-full h-10 p-1 bg-white border border-gray-300 rounded-md cursor-pointer" />
+                            </div>
+                        )}
                     </div>
                   </div>
                 )}
-            </Card>
+            </CollapsibleCard>
 
-             <Card title={t.advanced.title}>
+            <CollapsibleCard 
+                title={t.advanced.title}
+                expandedState={isSectionExpanded('advanced')}
+                onToggle={() => toggleSection('advanced')}
+            >
                 <div>
                     <Label htmlFor="errorCorrectionLevel">{t.advanced.errorCorrection}</Label>
                     <select id="errorCorrectionLevel" name="errorCorrectionLevel" value={state.errorCorrectionLevel} onChange={handleValueChange} className={selectClasses}>
@@ -205,7 +317,7 @@ const ControlsPanel: React.FC<{ state: AppState; setState: React.Dispatch<React.
                         <option value="H">{t.advanced.high}</option>
                     </select>
                 </div>
-            </Card>
+            </CollapsibleCard>
         </div>
     );
 };

@@ -4,7 +4,7 @@
 */
 
 import React, { useState, useMemo, useEffect } from 'react';
-import type { Options, DotType, CornerSquareType, CornerDotType, ErrorCorrectionLevel } from 'qr-code-styling';
+// Remove old import since we're switching to react-qrcode-logo
 import ControlsPanel from './components/ControlsPanel';
 import QrCodePreview from './components/QrCodePreview';
 import Header from './components/Header';
@@ -14,26 +14,32 @@ export type Language = 'en' | 'pt';
 
 export interface AppState {
   data: string;
-  logo?: string;
-  // Colors
+  // Colors  
   foregroundColor: string;
   backgroundColor: string;
-  useGradient: boolean;
-  gradientType: 'linear' | 'radial';
-  gradientColor1: string;
-  gradientColor2: string;
-  // Dots
-  dotType: DotType;
-  // Corners
-  cornerSquareType: CornerSquareType;
-  cornerDotType: CornerDotType;
+  // QR Style
+  qrStyle: 'squares' | 'dots' | 'fluid';
+  // Eye customization (advanced)
+  eyeColor: string;
+  eyeColorOuter: string;
+  eyeColorInner: string;
+  useAdvancedEyeColors: boolean;
+  eyeRadius: number;
+  eyeRadiusOuter: number;
+  eyeRadiusInner: number;
+  useAdvancedEyeRadius: boolean;
   // Logo
+  logo?: string;
   logoSize: number;
-  logoMargin: number;
   logoOpacity: number;
+  logoPadding: number;
+  logoPaddingStyle: 'square' | 'circle';
+  logoPaddingRadius: number;
+  logoBackground: boolean;
+  logoBackgroundColor: string;
   // Misc
-  margin: number;
-  errorCorrectionLevel: ErrorCorrectionLevel;
+  quietZone: number;
+  errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H';
 }
 
 const App: React.FC = () => {
@@ -42,23 +48,29 @@ const App: React.FC = () => {
         // Colors
         foregroundColor: '#0b1226',
         backgroundColor: '#ffffff',
-        useGradient: false,
-        gradientType: 'linear',
-        gradientColor1: '#6366f1',
-        gradientColor2: '#ec4899',
-        // Dots
-        dotType: 'rounded',
-        // Corners
-        cornerSquareType: 'extra-rounded',
-        cornerDotType: 'dot',
-        // Misc
-        margin: 10,
-        errorCorrectionLevel: 'Q',
+        // QR Style
+        qrStyle: 'squares',
+        // Eye customization (advanced)
+        eyeColor: '#0b1226',
+        eyeColorOuter: '#0b1226',
+        eyeColorInner: '#0b1226',
+        useAdvancedEyeColors: false,
+        eyeRadius: 0,
+        eyeRadiusOuter: 0,
+        eyeRadiusInner: 0,
+        useAdvancedEyeRadius: false,
         // Logo
         logo: undefined,
-        logoSize: 0.4,
-        logoMargin: 6,
+        logoSize: 80, // pixels instead of ratio
         logoOpacity: 1,
+        logoPadding: 0,
+        logoPaddingStyle: 'square',
+        logoPaddingRadius: 0,
+        logoBackground: false,
+        logoBackgroundColor: '#ffffff',
+        // Misc
+        quietZone: 10,
+        errorCorrectionLevel: 'Q',
     });
 
     const [processedLogo, setProcessedLogo] = useState<string | undefined>();
@@ -113,69 +125,50 @@ const App: React.FC = () => {
         }
     }, [state.logo, state.logoOpacity]);
     
-    const qrOptions: Options = useMemo(() => ({
-      width: 500,
-      height: 500,
-      data: state.data,
-      image: processedLogo,
-      margin: state.margin,
-      qrOptions: {
-        errorCorrectionLevel: state.errorCorrectionLevel,
-      },
-      dotsOptions: {
-        type: state.dotType,
-        ...(state.useGradient ? {
-            gradient: {
-              type: state.gradientType,
-              colorStops: [
-                { offset: 0, color: state.gradientColor1 },
-                { offset: 1, color: state.gradientColor2 }
-              ]
-            }
-        } : {
-            color: state.foregroundColor,
-        })
-      },
-      backgroundOptions: {
-        color: state.backgroundColor,
-      },
-      imageOptions: {
-        hideBackgroundDots: true,
-        imageSize: state.logoSize,
-        margin: state.logoMargin,
-        crossOrigin: "anonymous",
-      },
-      cornersSquareOptions: {
-        type: state.cornerSquareType,
-        ...(state.useGradient ? {
-            gradient: {
-              type: state.gradientType,
-              colorStops: [
-                { offset: 0, color: state.gradientColor1 },
-                { offset: 1, color: state.gradientColor2 }
-              ]
-            }
-        } : {
-            color: state.foregroundColor,
-        })
-      },
-      cornersDotOptions: {
-        color: state.foregroundColor,
-        type: state.cornerDotType,
-      },
-    }), [state, processedLogo]);
+    const qrProps = useMemo(() => {
+        // Build eye color configuration
+        const eyeColor = state.useAdvancedEyeColors 
+            ? { outer: state.eyeColorOuter, inner: state.eyeColorInner }
+            : state.eyeColor;
+            
+        // Build eye radius configuration  
+        const eyeRadius = state.useAdvancedEyeRadius
+            ? { outer: state.eyeRadiusOuter, inner: state.eyeRadiusInner }
+            : state.eyeRadius;
+            
+        return {
+            value: state.data,
+            size: 400,
+            fgColor: state.foregroundColor,
+            bgColor: state.backgroundColor,
+            logoImage: processedLogo,
+            logoWidth: state.logoSize,
+            logoHeight: state.logoSize,
+            logoOpacity: state.logoOpacity,
+            logoPadding: state.logoPadding,
+            logoPaddingStyle: state.logoPaddingStyle,
+            logoPaddingRadius: state.logoPaddingRadius,
+            qrStyle: state.qrStyle,
+            eyeColor: eyeColor,
+            eyeRadius: eyeRadius,
+            ecLevel: state.errorCorrectionLevel,
+            quietZone: state.quietZone,
+        };
+    }, [state, processedLogo]);
 
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
             <Header theme={theme} setTheme={setTheme} />
             <main className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1">
-                        <ControlsPanel state={state} setState={setState} />
+                <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
+                    {/* QR Code Preview - Always visible on top for mobile */}
+                    <div className="order-1 lg:order-2 lg:col-span-2">
+                        <QrCodePreview qrProps={qrProps} />
                     </div>
-                    <div className="lg:col-span-2">
-                        <QrCodePreview options={qrOptions} />
+                    {/* Controls Panel - Collapsible on mobile */}
+                    <div className="order-2 lg:order-1 lg:col-span-1">
+                        <ControlsPanel state={state} setState={setState} />
                     </div>
                 </div>
             </main>

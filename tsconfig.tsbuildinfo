@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/index.tsx","./src/components/controlspanel.tsx","./src/components/header.tsx","./src/components/qrcodepreview.tsx","./src/context/languagecontext.tsx","./src/hooks/useqrcode.ts","./src/i18n/translations.ts"],"version":"5.9.2"}

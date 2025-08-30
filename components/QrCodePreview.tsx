@@ -3,13 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState } from 'react';
-import { useQrCode } from '../hooks/useQrCode';
-import type { Options } from 'qr-code-styling';
+import React, { useState, useRef } from 'react';
+import QRCode from 'react-qrcode-logo';
 import { useLanguage } from '../context/LanguageContext';
 
 interface QrCodePreviewProps {
-  options: Options;
+  qrProps: any;
 }
 
 const DownloadIcon = ({ className }: { className?: string }) => (
@@ -18,21 +17,48 @@ const DownloadIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
-const QrCodePreview: React.FC<QrCodePreviewProps> = ({ options }) => {
+const QrCodePreview: React.FC<QrCodePreviewProps> = ({ qrProps }) => {
   const [fileType, setFileType] = useState<'png' | 'jpeg' | 'svg'>('png');
-  // FIX: The useQrCode hook only accepts one argument.
-  const { ref, download } = useQrCode(options);
+  const qrRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { translations } = useLanguage();
   const t = translations.preview;
+  
+  // Use all props directly from the library
+  const cleanQrProps = qrProps;
 
   const handleDownload = () => {
-    download({ name: 'qrcode', extension: fileType });
+    if (qrRef.current) {
+      const originalCanvas = qrRef.current.canvasRef.current;
+      if (originalCanvas) {
+        downloadCanvas(originalCanvas);
+      }
+    }
+  };
+
+  const downloadCanvas = (canvas: HTMLCanvasElement) => {
+    const link = document.createElement('a');
+    link.download = `qrcode.${fileType}`;
+    if (fileType === 'png') {
+      link.href = canvas.toDataURL('image/png');
+    } else if (fileType === 'jpeg') {
+      link.href = canvas.toDataURL('image/jpeg', 0.8);
+    } else if (fileType === 'svg') {
+      // For SVG, we'll fallback to PNG
+      link.href = canvas.toDataURL('image/png');
+    }
+    link.click();
   };
   
   return (
-    <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200/80 dark:border-gray-700/50 shadow-sm p-4 sm:p-6 sticky top-28 transition-colors duration-300">
-      <div className="aspect-square w-full max-w-lg mx-auto bg-gray-100/50 dark:bg-gray-900/50 rounded-lg p-4 qr-code-container">
-        <div ref={ref} />
+    <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200/80 dark:border-gray-700/50 shadow-sm p-4 sm:p-6 lg:sticky lg:top-28 transition-colors duration-300">
+      <div 
+        ref={containerRef}
+        className="aspect-square w-full max-w-lg mx-auto bg-gray-100/50 dark:bg-gray-900/50 rounded-lg p-3 sm:p-4 lg:p-6 qr-code-container relative overflow-hidden"
+      >
+        <div className="w-full h-full flex items-center justify-center">
+          <QRCode {...cleanQrProps} ref={qrRef} />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">

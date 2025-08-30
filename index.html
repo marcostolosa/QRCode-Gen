@@ -27,10 +27,49 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      .qr-code-container > canvas,
-      .qr-code-container > svg {
+      .qr-code-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+      .qr-code-container > div {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         width: 100% !important;
+        height: 100% !important;
+        position: relative !important;
+      }
+      .qr-code-container canvas,
+      .qr-code-container svg {
+        max-width: calc(100% - 1rem) !important;
+        max-height: calc(100% - 1rem) !important;
+        width: auto !important;
         height: auto !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin: auto !important;
+        border-radius: 4px;
+      }
+      
+      /* Mobile adjustments */
+      @media (max-width: 640px) {
+        .qr-code-container canvas,
+        .qr-code-container svg {
+          max-width: calc(100% - 0.5rem) !important;
+          max-height: calc(100% - 0.5rem) !important;
+        }
+      }
+      
+      /* Large screen adjustments */
+      @media (min-width: 1024px) {
+        .qr-code-container canvas,
+        .qr-code-container svg {
+          max-width: calc(100% - 2rem) !important;
+          max-height: calc(100% - 2rem) !important;
+        }
       }
     </style>
   <script type="importmap">
@@ -49,7 +88,6 @@
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

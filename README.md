@@ -1,202 +1,218 @@
 # QR Code Generator
 
-[![Deploy Status](https://github.com/marcostolosa/QRCode-Gen/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://github.com/marcostolosa/QRCode-Gen/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-A modern, feature-rich QR code generator web application built with React, TypeScript, and Vite. Create customizable QR codes with advanced styling options, logo integration, and multiple export formats.
+🔗 **Live Demo**: [qrcode.mindsecurity.org](https://qrcode.mindsecurity.org)
 
-![](components/demo.png)
+A modern, feature-rich QR code generator built with React and TypeScript. Create highly customizable QR codes with advanced styling options, logo embedding, and multiple export formats. Optimized for both desktop and mobile with responsive accordion design.
 
-## Features
+## ✨ Features
 
-### Core Functionality
-- **Real-time QR Code Generation**: Instant preview with live updates
-- **Multiple Export Formats**: PNG, JPEG, and SVG support
-- **Custom Data Input**: Support for URLs, text, and other data types
-- **High-Resolution Output**: Scalable vector and raster formats
+### 🎯 Core Functionality
+- **Real-time QR Code Generation**: Instant preview with live updates as you type
+- **Multiple Export Formats**: PNG, JPEG, and SVG support with high-resolution output
+- **Custom Data Input**: Support for URLs, text, and any data type
+- **Download Integration**: One-click download with format selection
 
-### Customization Options
-- **Color Schemes**: Solid colors and gradient support (linear/radial)
-- **Dot Patterns**: Six different dot styles (dots, rounded, classy, square, extra-rounded, classy-rounded)
-- **Corner Customization**: Configurable corner squares and corner dots
-- **Logo Integration**: Upload and embed custom logos with size, opacity, and margin controls
-- **Error Correction Levels**: L, M, Q, H levels for different use cases
+### 🎨 Advanced Customization
+- **Color Controls**: Foreground and background color customization
+- **QR Styles**: Choose from squares, dots, or fluid styles
+- **Advanced Eye Customization**: 
+  - Basic mode: Single color and radius for all eyes
+  - Advanced mode: Separate outer/inner colors and radius control
+- **Logo Integration**: Upload custom logos with advanced controls:
+  - Size adjustment (20-200px)
+  - Opacity control (10-100%)
+  - Padding with square/circle style
+  - Border radius for square padding
+  - Optional background color
+- **Error Correction Levels**: L, M, Q, H levels for different reliability needs
+- **Quiet Zone**: Adjustable margin around QR code (0-40px)
 
-### User Experience
-- **Dark/Light Theme**: Automatic system preference detection with manual toggle
-- **Internationalization**: English and Portuguese language support
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Accessibility**: ARIA labels and keyboard navigation support
+### 📱 Mobile-First Design
+- **Responsive Layout**: QR code always prioritized and visible
+- **Accordion Controls**: Space-efficient collapsible sections
+- **One Section Open**: Only one control panel open at a time to maximize QR code visibility
+- **Touch Optimized**: Smooth animations and mobile-friendly interactions
+- **Cross-Device**: Optimized for mobile, tablet, and desktop
 
-## Technology Stack
+### 🌐 User Experience
+- **Dark/Light Theme**: System preference detection with manual toggle
+- **Internationalization**: Multi-language support (English/Portuguese)
+- **Real-time Updates**: See changes instantly as you adjust controls
+- **Accessibility**: ARIA labels and keyboard navigation
+- **Performance**: Optimized bundle size and fast loading
 
-- **Frontend Framework**: React 18.3.1
-- **Language**: TypeScript 5.2.2
-- **Build Tool**: Vite 5.3.1
-- **Styling**: Tailwind CSS 3.4.4
-- **QR Code Library**: qr-code-styling 1.6.0
-- **Deployment**: GitHub Pages with GitHub Actions
+## 🚀 Technology Stack
 
-## Getting Started
+- **Frontend**: React 18.3.1 with TypeScript 5.2.2
+- **Build Tool**: Vite 5.3.1 for fast development and optimal bundling
+- **Styling**: Tailwind CSS 3.4.4 for responsive design
+- **QR Generation**: react-qrcode-logo 4.0.0 for advanced QR customization
+- **Deployment**: GitHub Pages with custom domain via GitHub Actions
+- **Domain**: Custom subdomain qrcode.mindsecurity.org
+
+## 🏁 Quick Start
 
 ### Prerequisites
-- Node.js (version 18 or higher)
-- npm or yarn package manager
+- Node.js 18+ 
+- npm or yarn
 
-### Installation
+### Development Setup
 
-1. Clone the repository:
 ```bash
+# Clone the repository
 git clone https://github.com/marcostolosa/QRCode-Gen.git
-cd QRCode-Gen
-```
+cd QRCode-Gen/qrcode-generator
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Start the development server:
-```bash
+# Start development server
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+Visit `http://localhost:5173` to see the application.
 
-### Building for Production
+### Production Build
 
 ```bash
+# Build for production
 npm run build
+
+# Preview production build locally
+npm run preview
 ```
 
-The built files will be available in the `dist` directory.
+## 📖 Usage Guide
 
-## Usage
-
-### Basic QR Code Generation
-1. Enter your data (URL, text, etc.) in the input field
-2. Customize appearance using the control panels
-3. Preview updates in real-time
-4. Select export format and download
+### Basic QR Generation
+1. **Enter Data**: Type URL, text, or any content in the input field
+2. **Instant Preview**: QR code updates in real-time
+3. **Choose Format**: Select PNG, JPEG, or SVG
+4. **Download**: Click download button
 
 ### Advanced Customization
-- **Colors**: Choose between solid colors or gradients
-- **Patterns**: Select from various dot and corner styles
-- **Logo**: Upload an image and adjust size, opacity, and margins
-- **Error Correction**: Higher levels provide better scanning reliability with logos
 
-## API Reference
+#### Colors & Style
+- Adjust foreground and background colors
+- Choose between squares, dots, or fluid QR styles
 
-### QR Code Options
+#### Eye Customization
+- **Basic Mode**: Single color and radius for all corner eyes
+- **Advanced Mode**: 
+  - Separate outer and inner eye colors
+  - Individual outer and inner radius control
+  - Toggle between modes easily
 
-The application supports all options from the `qr-code-styling` library:
+#### Logo Integration
+- Upload PNG, JPEG, or SVG logos
+- Adjust size from 20-200 pixels
+- Control opacity from 10-100%
+- Add padding with square or circular style
+- Customize border radius for square padding
+- Optional background color for logo area
 
+#### Mobile Experience
+- **Accordion Navigation**: Tap section headers to expand/collapse
+- **One Section Rule**: Only one section opens at a time for space efficiency
+- **QR Code Priority**: Always visible at the top on mobile
+- **Smooth Transitions**: Animated expand/collapse with visual feedback
+
+## 🔧 Configuration Options
+
+### QR Code Properties
 ```typescript
-interface QRCodeOptions {
-  width: number;
-  height: number;
-  data: string;
-  image?: string;
-  margin: number;
-  qrOptions: {
-    errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H';
-  };
-  dotsOptions: {
-    type: DotType;
-    color?: string;
-    gradient?: GradientOptions;
-  };
-  backgroundOptions: {
-    color: string;
-  };
-  imageOptions: {
-    hideBackgroundDots: boolean;
-    imageSize: number;
-    margin: number;
-    crossOrigin: string;
-  };
-  cornersSquareOptions: {
-    type: CornerSquareType;
-    color?: string;
-    gradient?: GradientOptions;
-  };
-  cornersDotOptions: {
-    type: CornerDotType;
-    color: string;
-  };
+interface QRCodeProps {
+  value: string;              // QR code data
+  size: number;               // QR code size (400px)
+  fgColor: string;            // Foreground color
+  bgColor: string;            // Background color
+  qrStyle: 'squares' | 'dots' | 'fluid';
+  ecLevel: 'L' | 'M' | 'Q' | 'H';  // Error correction
+  quietZone: number;          // Margin in pixels
+  logoImage?: string;         // Base64 logo image
+  logoWidth: number;          // Logo width in pixels
+  logoHeight: number;         // Logo height in pixels
+  logoOpacity: number;        // Logo opacity (0-1)
+  logoPadding: number;        // Logo padding
+  logoPaddingStyle: 'square' | 'circle';
+  logoPaddingRadius: number;  // Border radius for square padding
+  eyeColor: string | { outer: string; inner: string };
+  eyeRadius: number | { outer: number; inner: number };
 }
 ```
 
-## Contributing
+## 🚀 Deployment
 
-Contributions are welcome! Please follow these steps:
+The application is automatically deployed to GitHub Pages using GitHub Actions:
+
+- **Production URL**: [qrcode.mindsecurity.org](https://qrcode.mindsecurity.org)
+- **GitHub Pages**: [marcostolosa.github.io/QRCode-Gen](https://marcostolosa.github.io/QRCode-Gen/)
+- **Auto Deploy**: Pushes to main branch trigger automatic deployment
+- **Custom Domain**: Configured with DNS CNAME to qrcode.mindsecurity.org
+
+### Manual Deployment
+```bash
+npm run build     # Build production bundle
+npm run deploy    # Deploy to GitHub Pages
+```
+
+## 📱 Browser Support
+
+- **Desktop**: Chrome, Firefox, Safari, Edge (latest versions)
+- **Mobile**: iOS Safari, Chrome Mobile, Samsung Internet
+- **Progressive**: Graceful degradation for older browsers
+
+## ⚡ Performance
+
+- **Bundle Size**: ~192KB JavaScript, ~17KB CSS (gzipped)
+- **Load Time**: <2s on 3G networks
+- **Lighthouse Score**: 95+ across all metrics
+- **Mobile Optimized**: First-class mobile experience
+
+## 🔒 Security & Privacy
+
+- **Client-Side Only**: All processing happens in your browser
+- **No Data Collection**: No analytics, tracking, or data storage
+- **HTTPS Enforced**: Secure connection for all requests
+- **No External APIs**: Completely self-contained application
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ### Development Guidelines
 - Follow TypeScript best practices
-- Maintain component modularity
-- Add appropriate type definitions
+- Maintain responsive design principles
+- Test on multiple screen sizes
 - Update documentation for new features
-- Ensure responsive design compatibility
 
-## Deployment
+## 📄 License
 
-The application is automatically deployed to GitHub Pages using GitHub Actions. The workflow:
+Apache License 2.0 - see [LICENSE](LICENSE) file for details.
 
-1. Runs on every push to the `main` branch
-2. Builds the application using Vite
-3. Deploys to GitHub Pages
-4. Supports custom domain configuration
+## 🙏 Acknowledgments
 
-### Custom Domain Setup
-1. Add CNAME file with your domain
-2. Configure DNS CNAME record pointing to `username.github.io`
-3. Enable HTTPS in GitHub Pages settings
+- **[react-qrcode-logo](https://github.com/gcoro/react-qrcode-logo)** - Advanced QR code generation
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[Heroicons](https://heroicons.com/)** - Beautiful SVG icons
+- **[Vite](https://vitejs.dev/)** - Fast build tool and dev server
 
-## Browser Compatibility
+## 📞 Support
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Performance
-
-- **Lighthouse Score**: 95+ for Performance, Accessibility, Best Practices, SEO
-- **Bundle Size**: ~210KB JavaScript, ~16KB CSS (gzipped)
-- **Load Time**: <2s on 3G networks
-
-## Security
-
-- No sensitive data collection or storage
-- Client-side only processing
-- HTTPS enforced in production
-- No third-party analytics or tracking
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [qr-code-styling](https://github.com/kozakdenys/qr-code-styling) for the QR code generation library
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [Heroicons](https://heroicons.com/) for the icon set
-
-## Support
-
-For support, please open an issue in the GitHub repository or contact the maintainer.
+- **Issues**: [GitHub Issues](https://github.com/marcostolosa/QRCode-Gen/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/marcostolosa/QRCode-Gen/discussions)
+- **Live Demo**: [qrcode.mindsecurity.org](https://qrcode.mindsecurity.org)
 
 ---
 
-**Live Demo**: [https://qrcode.mindsecurity.org](https://qrcode.mindsecurity.org)
+**Built with ❤️ using React, TypeScript, and modern web technologies**
