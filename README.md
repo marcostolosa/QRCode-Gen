@@ -10,6 +10,8 @@
 
 A modern, feature-rich QR code generator built with React and TypeScript. Create highly customizable QR codes with advanced styling options, logo embedding, and multiple export formats. Optimized for both desktop and mobile with responsive accordion design.
 
+![](components/demo.png)
+
 ## ✨ Features
 
 ### 🎯 Core Functionality
